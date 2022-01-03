@@ -1,0 +1,113 @@
+//code arduino
+char state;
+float value;
+int led1=10;
+int led2=11;
+int ssLM35=A0;
+void setup()
+{
+  Serial.begin(9600);
+  pinMode(led1,OUTPUT);
+  pinMode(led2,OUTPUT);
+}
+
+void dond()
+{
+  value=analogRead(ssLM35);
+  float temp=value*500.0/1024.0;
+  Serial.print(temp);
+  delay(1000);
+  if(temp>=60.0)
+  {
+    digitalWrite(led1,HIGH);
+  }
+  else digitalWrite(led2,LOW);
+  if(temp<=20.0)
+  {
+    digitalWrite(led2,HIGH);
+  }
+  else digitalWrite(led1,LOW);
+}
+void loop()
+{
+  if(Serial.available())
+  {
+    state=Serial.read();
+    if(state=='1')
+    {
+      while(1){
+        dond();
+      }
+    }
+  }
+}
+
+
+//code visual C#
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace doLM35daydu
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            serialPort1.Open();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            serialPort1.Write("1");
+            timer1.Start();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            serialPort1.Write("0");
+            timer1.Stop();
+            MessageBox.Show("Nhiet do lan cuoi la:   " + textBox1.Text);
+            textBox1.Clear();
+            panel1.BackColor = Color.WhiteSmoke;
+            panel2.BackColor = Color.WhiteSmoke;
+
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            textBox1.Text = serialPort1.ReadExisting();
+            if (textBox1.Text != null && textBox1.Text != "")
+            {
+                var number = Convert.ToDouble(textBox1.Text);
+                if(number <= 20.00)
+                {
+                    panel1.BackColor=Color.Green;
+                }
+                    else panel1.BackColor=Color.WhiteSmoke;
+                if (number >= 60.00)
+                {
+                    panel2.BackColor = Color.Red;
+                }
+                else panel2.BackColor = Color.WhiteSmoke;
+              
+            }
+        }
+    }
+}
